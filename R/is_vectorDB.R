@@ -4,6 +4,7 @@
 #'
 #' @param x The object to check
 #' @return TRUE if the object is a vectorDB, FALSE otherwise
+#' @importFrom data.table is.data.table
 #' @export
 #'
 #' @examples
@@ -19,9 +20,10 @@ is_vectorDB <- function(x) {
   if (!all(names(x) %in% c("vectors", "metadata"))) return(FALSE)
 
   # Check the type of each component
-  if (!all(sapply(x, is.data.table))) return(FALSE)
+  if (!all(sapply(x, data.table::is.data.table))) return(FALSE)
 
-  # Additional logic can be added here to check the contents of the data.tables
+  # Check if metadata has an "id" column
+  if (!"id" %in% names(x$metadata)) return(FALSE)
 
   return(TRUE)
 }

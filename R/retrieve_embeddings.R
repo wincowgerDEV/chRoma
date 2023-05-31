@@ -16,23 +16,27 @@
 #' embeddings <- retrieve_vectors(c("This is a document", "This is another document"))
 #' }
 retrieve_vectors <- function(inputs, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY")) {
+  if(!is.character(inputs)) stop("Inputs must be a character vector of terms to get embeddings for.")
 
-  vectors <- lapply(inputs, function(input){
-    parameter_list = list(input = input, model = model)
+  if(is.null(api_key) || api_key == "") stop("API key is missing. Please set the OPENAI_API_KEY environment variable.")
 
-    request_base = httr::POST(url = url,
-                              body = parameter_list,
-                              httr::add_headers(Authorization = paste("Bearer", api_key)),
-                              encode = "json")
+    parameter_list = list(input = inputs, model = model)
 
-    output_base = httr::content(request_base)
-    if(request_base$status_code == 200){
-      embedding_raw = unlist(output_base$data[[1]]$embedding)
-    }
-    else{
-      embedding_raw = rep(-88, times = 1536)
-    }
-  }) |> data.table::as.data.table()
+    request_base <- tryCatch({
+      httr::POST(url = url,
+                 body = parameter_list,
+                 httr::add_headers(Authorization = paste("Bearer", api_key)),
+                 encode = "json")
+    }, error = function(e) {
+      stop("Error in HTTP request: ", e$message)
+    })
+
+    if(request_base$status_code != 200) stop("API request failed with status code: ", request_base$status_code)
+
+    output_base <- httr::content(request_base)
+
+    vectors <- lapply(output_base$data, function(x){unlist(x$embedding)}) |>
+      data.table::as.data.table()
 
   return(vectors)
 }

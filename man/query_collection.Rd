@@ -20,6 +20,8 @@ query_collection(
 \item{query_embeddings}{A vector or other vector database to compute similarity against}
 
 \item{top_n}{Integer, indicating the number of top matches to return}
+
+\item{type}{The function to use to compute the similarities between the vectors}
 }
 \value{
 A matrix of similarity scores or a data.table of top matches

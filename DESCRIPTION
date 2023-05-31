@@ -1,12 +1,20 @@
 Package: chRoma
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: A Tool for Managing Vector Databases
+Version: 0.1.0
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person(given = "Win",
+           family = "Cowger",
+           role = c("aut", "cre"),
+           email = "wincowger@gmail.com")
+Description: A set of tools for creating, managing, and querying in-memory vector databases. The databases can handle embeddings and metadata, support filtering by metadata, and can calculate similarities between embeddings.
+License: use_mit_license()
 Encoding: UTF-8
+Imports: 
+    data.table,
+    digest,
+    text2vec,
+    httr
+Suggests: 
+    testthat (>= 3.0.0)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

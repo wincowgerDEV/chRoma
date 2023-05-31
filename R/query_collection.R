@@ -7,10 +7,10 @@
 #' @param filter An expression string that represents the filter to be applied on metadata
 #' @param query_embeddings A vector or other vector database to compute similarity against
 #' @param top_n Integer, indicating the number of top matches to return
+#' @param type The function to use to compute the similarities between the vectors
 #' @return A matrix of similarity scores or a data.table of top matches
-#' @importFrom data.table :=
 #' @importFrom text2vec sim2
-#' @importFrom data.table data.table melt setnames
+#' @importFrom data.table data.table setnames :=
 #' @export
 #'
 #' @examples
@@ -31,8 +31,12 @@
 #'                                query_embeddings = c(1.2, 2.3, 4.5),
 #'                                top_n = 5)
 #' }
-query_collection <- function(db,  filter = NULL, query_embeddings = NULL, top_n = NULL, type = "cosine") {
-  if(!inherits(db, "vectorDB")) stop("db is not a vector database.")
+query_collection <- function(db, filter = NULL, query_embeddings = NULL, top_n = NULL, type = "cosine") {
+  if(!is_vectorDB(db)) stop("db is not a vector database.")
+
+  if(!(is.null(top_n) || (round(top_n) == top_n && top_n > 0))) stop("top_n must be a positive integer.")
+
+  if(!type %in% c("cosine", "dotproduct")) stop("type must be 'cosine' or 'dotproduct'.")
 
   # Filter the database based on metadata
   if (!is.null(filter)) {
@@ -42,15 +46,19 @@ query_collection <- function(db,  filter = NULL, query_embeddings = NULL, top_n 
 
   # Compute similarity
   if (!is.null(query_embeddings)) {
-
     if(is.character(query_embeddings)){
-      query_embeddings <- matrix(text_to_embedding(query_embeddings), ncol = 1)
+      query_embeddings <- matrix(retrieve_vectors(query_embeddings), ncol = 1)
+      col_names(query_embeddings) <- "identified"
     }
     else if(is.numeric(query_embeddings)){
       query_embeddings <- matrix(query_embeddings, ncol = 1)
+      colnames(query_embeddings) <- "identified"
     }
-    else if(class(query_embeddings) == "vectorDB"){
+    else if(is_vectorDB(query_embeddings)){
       query_embeddings <- as.matrix(query_embeddings$vectors)
+    }
+    else {
+      stop("query_embeddings must be character, numeric or vectorDB.")
     }
 
     if(type == "cosine"){
@@ -64,7 +72,8 @@ query_collection <- function(db,  filter = NULL, query_embeddings = NULL, top_n 
     if (!is.null(top_n)) {
       # Reshape similarity matrix and convert to data.table
       similarity_dt <- data.table::data.table(query_id = rownames(similarity),
-                                              db_id = rep(colnames(similarity), each = nrow(similarity)),
+                                              db_id = rep(colnames(similarity),
+                                                          each = nrow(similarity)),
                                               similarity = c(similarity))
 
       # Order and filter top_n matches for each query

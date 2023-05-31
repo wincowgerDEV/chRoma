@@ -6,10 +6,13 @@
 #' to retrieve the vectors. The id field in the metadata is created as a reproducible hash of the
 #' embedding vector.
 #'
-#' @param db The vector database
+#' @param db The vector database.
 #' @param vectors A list of vectors to add. If NULL, vectors are retrieved using the text field in the metadata.
-#' @param metadatas A list of metadata corresponding to each vector
-#' @return The updated vector database
+#' @param metadatas A list of metadata corresponding to each vector. This cannot be NULL or empty.
+#' @param model The name of the model to use for retrieving vectors. Default is 'text-embedding-ada-002'.
+#' @param url The URL of the API to use for retrieving vectors. Default is "https://api.openai.com/v1/embeddings".
+#' @param api_key The API key for the vector retrieval API. This is required when vectors is NULL.
+#' @return The updated vector database.
 #' @importFrom digest digest
 #' @importFrom data.table data.table rbindlist setnames as.data.table :=
 #' @export
@@ -29,15 +32,18 @@
 #'                                   list(text = "This is the fifth document", file = "source5"))
 #'                  )
 #' }
-
 add_collection <- function(db, vectors = NULL, metadatas, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY")) {
   if(!inherits(db, "vectorDB")) stop("db is not a vector database.")
+
+  # Check if metadatas is NULL or empty
+  if(is.null(metadatas) || length(metadatas) == 0) stop("metadatas cannot be NULL or empty.")
 
   metadata_dt <- data.table::rbindlist(metadatas, use.names = FALSE)
 
   if (is.null(vectors)) {
+    # Check if API Key is NULL or empty
+    if(is.null(api_key) || api_key == "") stop("API Key cannot be NULL or empty when vectors is NULL.")
     # Retrieve new vectors using the API and the text field in the metadata
-    # Replace the following line with your actual retrieval function
     vectors <- retrieve_vectors(metadata_dt$text, model = model, url = url, api_key = api_key)
   }
 

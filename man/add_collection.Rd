@@ -14,14 +14,20 @@ add_collection(
 )
 }
 \arguments{
-\item{db}{The vector database}
+\item{db}{The vector database.}
 
 \item{vectors}{A list of vectors to add. If NULL, vectors are retrieved using the text field in the metadata.}
 
-\item{metadatas}{A list of metadata corresponding to each vector}
+\item{metadatas}{A list of metadata corresponding to each vector. This cannot be NULL or empty.}
+
+\item{model}{The name of the model to use for retrieving vectors. Default is 'text-embedding-ada-002'.}
+
+\item{url}{The URL of the API to use for retrieving vectors. Default is "https://api.openai.com/v1/embeddings".}
+
+\item{api_key}{The API key for the vector retrieval API. This is required when vectors is NULL.}
 }
 \value{
-The updated vector database
+The updated vector database.
 }
 \description{
 This function retrieves new vectors from an external source using the provided API key
