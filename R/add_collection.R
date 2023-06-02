@@ -64,13 +64,14 @@ add_collection <- function(db, vectors = NULL, metadatas, model = 'text-embeddin
     vectors_dt <- vectors
   }
   else if(is.list(vectors)){
-    vectors_dt <- data.table::rbindlist(vectors, use.names = FALSE)
+    if(length(unique(sapply(vectors, length))) != 1) stop("All vectors should have the same length in the list.")
+    if(length(vectors[[1]]) == nrow(db$vectors) | nrow(db$vectors) == 0) stop("All vectors should have the same length as the vectorDB you are adding to or you must be adding to an empty vectorDB.")
+    vectors_dt <- data.table::as.data.table(vectors, use.names = FALSE)
   }
   else{
     stop("Vectors must be either a data.table or a list")
   }
 
-  if(nrow(db$vectors) != 0 & nrow(vectors_dt) != nrow(db$vectors)) stop("All vectors should have the same length.")
 
   if(nrow(metadata_dt) != length(vectors_dt)) stop("The number of metadata and vectors should be the same.")
 
