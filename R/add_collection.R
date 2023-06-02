@@ -31,6 +31,10 @@
 #'                                   list(text = "This is a fourth document", file = "source4"),
 #'                                   list(text = "This is the fifth document", file = "source5"))
 #'                  )
+#' #Example combining two databases.
+#' db2 <- add_collection(create_collection(),
+#'                       vectors = db$vectors,
+#'                       metadatas = db$metadatas)
 #' }
 add_collection <- function(db, vectors = NULL, metadatas, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY")) {
   if(!inherits(db, "vectorDB")) stop("db is not a vector database.")
@@ -38,22 +42,42 @@ add_collection <- function(db, vectors = NULL, metadatas, model = 'text-embeddin
   # Check if metadatas is NULL or empty
   if(is.null(metadatas) || length(metadatas) == 0) stop("metadatas cannot be NULL or empty.")
 
-  metadata_dt <- data.table::rbindlist(metadatas, use.names = FALSE)
+  if(is.data.table(metadatas)){
+    metadata_dt <- metadatas
+  }
+  else if(is.list(metadatas)){
+    metadata_dt <- data.table::rbindlist(metadatas, use.names = FALSE)
+  }
+  else{
+    stop("Metadatas must be either a data.table or a list")
+  }
 
   if (is.null(vectors)) {
     # Check if API Key is NULL or empty
     if(is.null(api_key) || api_key == "") stop("API Key cannot be NULL or empty when vectors is NULL.")
+    if(any(metadata_dt$text %in% db$metadata$text)) message("Some of the text you are requesting embeddings for already exists in the metadata of the database you are adding to.")
     # Retrieve new vectors using the API and the text field in the metadata
     vectors <- retrieve_vectors(metadata_dt$text, model = model, url = url, api_key = api_key)
   }
 
-  if(nrow(metadata_dt) != length(vectors)) stop("All inputs and outputs should be of the same length.")
+  if(nrow(db$vectors) != 0 & nrow(vectors) != nrow(db$vectors)) stop("All vectors should have the same length.")
+
+  if(nrow(metadata_dt) != length(vectors)) stop("The number of metadata and vectors should be the same.")
+
+  if(is.data.table(vectors)){
+    vectors_dt <- vectors
+  }
+  else if(is.list(vectors)){
+    vectors_dt <- data.table::rbindlist(vectors, use.names = FALSE)
+  }
+  else{
+    stop("Vectors must be either a data.table or a list")
+  }
 
   # Create a reproducible hash of the embedding vector to be used as the id
   ids <- vapply(vectors, function(x) digest::digest(x), FUN.VALUE = character(1))
 
   # Prepare data.tables
-  vectors_dt <- data.table::as.data.table(vectors)
   data.table::setnames(vectors_dt, ids)
 
   metadata_dt[, id := ids]
