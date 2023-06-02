@@ -65,14 +65,13 @@ add_collection <- function(db, vectors = NULL, metadatas, model = 'text-embeddin
   }
   else if(is.list(vectors)){
     if(length(unique(sapply(vectors, length))) != 1) stop("All vectors should have the same length in the list.")
-    if(length(vectors[[1]]) == nrow(db$vectors) | nrow(db$vectors) == 0) stop("All vectors should have the same length as the vectorDB you are adding to or you must be adding to an empty vectorDB.")
     vectors_dt <- data.table::as.data.table(vectors, use.names = FALSE)
   }
   else{
     stop("Vectors must be either a data.table or a list")
   }
 
-
+  if((nrow(vectors_dt) != nrow(db$vectors)) & (nrow(db$vectors) != 0)) stop("All vectors should have the same length as the vectorDB you are adding to or you must be adding to an empty vectorDB.")
   if(nrow(metadata_dt) != length(vectors_dt)) stop("The number of metadata and vectors should be the same.")
 
   # Create a reproducible hash of the embedding vector to be used as the id

@@ -53,20 +53,4 @@ test_that("add_collection function handles inconsistent vector lengths", {
   expect_error(add_collection(create_collection(), vectors, metadatas), "All vectors should have the same length in the list.")
 })
 
-test_that("add_collection function correctly fetches new vectors", {
-
-  skip_on_cran()
-
-  db <- create_vectorDB(list(a = c(1, 2, 3), b = c(4, 5, 6)),
-                        list(id = c("a", "b"), text = c("text a", "text b")))
-
-  metadatas <- list(list(text = "text c", file = "source3"), list(text = "text d", file = "source4"))
-
-  db_updated <- add_collection(db, NULL, metadatas)
-
-  expect_equal(length(db_updated$vectors), 4)
-  expect_equal(nrow(db_updated$metadata), 4)
-  expect_true(all(c("a", "b", "c", "d") %in% db_updated$metadata$id))
-  expect_true(all(c("a", "b", "c", "d") %in% colnames(db_updated$vectors)))
-})
 

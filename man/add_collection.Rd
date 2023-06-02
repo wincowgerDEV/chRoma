@@ -50,5 +50,9 @@ db <- add_collection(create_collection(),
                                   list(text = "This is a fourth document", file = "source4"),
                                   list(text = "This is the fifth document", file = "source5"))
                  )
+#Example combining two databases.
+db2 <- add_collection(create_collection(),
+                      vectors = db$vectors,
+                      metadatas = db$metadatas)
 }
 }
