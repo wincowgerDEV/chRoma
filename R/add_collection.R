@@ -60,10 +60,6 @@ add_collection <- function(db, vectors = NULL, metadatas, model = 'text-embeddin
     vectors <- retrieve_vectors(metadata_dt$text, model = model, url = url, api_key = api_key)
   }
 
-  if(nrow(db$vectors) != 0 & nrow(vectors) != nrow(db$vectors)) stop("All vectors should have the same length.")
-
-  if(nrow(metadata_dt) != length(vectors)) stop("The number of metadata and vectors should be the same.")
-
   if(is.data.table(vectors)){
     vectors_dt <- vectors
   }
@@ -74,8 +70,12 @@ add_collection <- function(db, vectors = NULL, metadatas, model = 'text-embeddin
     stop("Vectors must be either a data.table or a list")
   }
 
+  if(nrow(db$vectors) != 0 & nrow(vectors_dt) != nrow(db$vectors)) stop("All vectors should have the same length.")
+
+  if(nrow(metadata_dt) != length(vectors_dt)) stop("The number of metadata and vectors should be the same.")
+
   # Create a reproducible hash of the embedding vector to be used as the id
-  ids <- vapply(vectors, function(x) digest::digest(x), FUN.VALUE = character(1))
+  ids <- vapply(vectors_dt, function(x) digest::digest(x), FUN.VALUE = character(1))
 
   # Prepare data.tables
   data.table::setnames(vectors_dt, ids)
