@@ -43,3 +43,5 @@ devtools::test()
 ## Contributing
 Please note that the vectorDB project is released with a Contributor Code of Conduct. By contributing to this project, you agree to abide by its terms.
 
+## Funding
+This work was funded in part by the National Renewable Energy Laboratory through the Water PACT project. 
