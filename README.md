@@ -25,7 +25,7 @@ vectors <- list(c(1.2, 2.3, 4.5), c(6.7, 8.2, 9.2))
 metadatas <- list(list(text = "This is a document", file = "source1"), list(text = "This is another document", file = "source2"))
 
 db <- add_collection(db, vectors, metadatas)
-
+```
 ## Testing
 You can run the package tests with:
 
