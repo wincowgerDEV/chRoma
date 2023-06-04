@@ -26,13 +26,6 @@ metadatas <- list(list(text = "This is a document", file = "source1"), list(text
 
 db <- add_collection(db, vectors, metadatas)
 
-# Get vectors from the collection
-vectors <- get_vectors(db)
-
-# Get metadata from the collection
-metadata <- get_metadata(db)
-```
-
 ## Testing
 You can run the package tests with:
 
