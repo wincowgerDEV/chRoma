@@ -36,7 +36,7 @@
 #'                       vectors = db$vectors,
 #'                       metadatas = db$metadatas)
 #' }
-add_collection <- function(db, vectors = NULL, metadatas, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY")) {
+add_collection <- function(db = create_collection(), vectors = NULL, metadatas, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY")) {
   if(!inherits(db, "vectorDB")) stop("db is not a vector database.")
 
   # Check if metadatas is NULL or empty

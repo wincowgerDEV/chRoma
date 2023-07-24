@@ -58,7 +58,7 @@ query_collection <- function(db, filter = NULL, query_embeddings = NULL, top_n =
       query_embeddings <- as.matrix(query_embeddings$vectors)
     }
     else {
-      stop("query_embeddings must be character, numeric or vectorDB.")
+      stop("query_embeddings must be character, numeric, or vectorDB.")
     }
 
     if(type == "cosine"){

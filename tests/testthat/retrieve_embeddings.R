@@ -20,3 +20,17 @@ test_that("retrieve_vectors handles incorrect input types correctly", {
   expect_error(retrieve_vectors(incorrect_inputs), "Inputs must be a character vector of terms to get embeddings for.")
 })
 
+
+test_that("check that an open ai api key works", {
+  library(data.table)
+  testthat::skip_on_cran()
+
+  api_key <- readLines("openai.txt")
+
+  words_to_retrieve <- c("test", "experiment", "elephant")
+
+  vectors <- retrieve_vectors(words_to_retrieve, api_key = api_key)
+
+  expect_true(is.data.table(vectors))
+})
+
