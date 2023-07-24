@@ -34,12 +34,14 @@ is_vectorDB(db)
 ## Compare the embeddings in the database to themselves, change query_embeddings if you want to use a different database.
 similarity_internal <- query_collection(db, query_embeddings = db, top_n = 2)
 similarity_internal
+
 ## Compare the database to another by first using a structured filter and then providing an embedding instead of a database and return the top 1. 
 similarity <- query_collection(db,
                                 filter = "file == 'source1'",
                                 query_embeddings = c(1.5, 2.7, 4.9),
                                 top_n = 1)
 similarity
+
 # Vector database opperations when you only have text you want to analyze ----
 
 ## Read in your OpenAI API Key
