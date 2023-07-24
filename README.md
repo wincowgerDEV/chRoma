@@ -51,9 +51,7 @@ words_to_retrieve <- data.table(text = c("test", "experiment", "elephant"))
 ## Create a vector database using the words found in the text column of the metadata input. You'll notice we didn't specify a db, it created a new empty one by default. It also grabs the OPENAI_API_KEY you set previously so no need to call that again. 
 db_2 <- add_collection(metadata = words_to_retrieve)
 
-
 ```
-
 ## Testing
 You can run the package tests with:
 
@@ -64,3 +62,5 @@ devtools::test()
 ## Contributing
 Please note that the vectorDB project is released with a Contributor Code of Conduct. By contributing to this project, you agree to abide by its terms.
 
+## Funding
+This work was funded in part by the National Renewable Energy Laboratory through the Water PACT project. 
