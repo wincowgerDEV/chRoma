@@ -5,12 +5,13 @@
 \title{Add new vectors and/or metadata to the collection}
 \usage{
 add_collection(
-  db,
+  db = create_collection(),
   vectors = NULL,
   metadatas,
   model = "text-embedding-ada-002",
   url = "https://api.openai.com/v1/embeddings",
-  api_key = Sys.getenv("OPENAI_API_KEY")
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  ignore_duplicates = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ add_collection(
 \item{url}{The URL of the API to use for retrieving vectors. Default is "https://api.openai.com/v1/embeddings".}
 
 \item{api_key}{The API key for the vector retrieval API. This is required when vectors is NULL.}
+
+\item{ignore_duplicates}{a logical value TRUE for ignore FALSE for don't ignore.}
 }
 \value{
 The updated vector database.

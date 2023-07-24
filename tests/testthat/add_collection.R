@@ -54,3 +54,38 @@ test_that("add_collection function handles inconsistent vector lengths", {
 })
 
 
+test_that("add_collection correctly ignores duplicate vectors and metadata", {
+  db <- create_collection()
+
+  vectors <- list(c(1.2, 2.3, 4.5), c(6.7, 8.2, 9.2))
+  metadatas <- list(list(text = "This is a document", file = "source1"), list(text = "This is another document", file = "source2"))
+
+  db <- add_collection(db, vectors, metadatas)
+
+  vectors_new <- list(c(6.7, 8.2, 9.2), c(7.1, 8.2, 9.2))  # The first vector is a duplicate
+  metadatas_new <- list(list(text = "This is another document", file = "source2"), list(text = "This is a new document", file = "source3"))  # The first metadata is a duplicate
+
+  db_new <- add_collection(db, vectors_new, metadatas_new)
+
+  expect_equal(length(db_new$vectors), 3)
+  expect_equal(nrow(db_new$metadata), 3)
+})
+
+test_that("add_collection adds duplicate vectors and metadata when ignore_duplicates is FALSE", {
+  db <- create_collection()
+
+  vectors <- list(c(1.2, 2.3, 4.5), c(6.7, 8.2, 9.2))
+  metadatas <- list(list(text = "This is a document", file = "source1"), list(text = "This is another document", file = "source2"))
+
+  db <- add_collection(db, vectors, metadatas)
+
+  vectors_new <- list(c(6.7, 8.2, 9.2), c(7.1, 8.2, 9.2))  # The first vector is a duplicate
+  metadatas_new <- list(list(text = "This is another document", file = "source2"), list(text = "This is a new document", file = "source3"))  # The first metadata is a duplicate
+
+  db_new <- add_collection(db, vectors_new, metadatas_new, ignore_duplicates = FALSE)
+
+  expect_equal(length(db_new$vectors), 4)
+  expect_equal(nrow(db_new$metadata), 4)
+})
+
+

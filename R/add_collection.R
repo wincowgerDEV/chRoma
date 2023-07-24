@@ -12,6 +12,7 @@
 #' @param model The name of the model to use for retrieving vectors. Default is 'text-embedding-ada-002'.
 #' @param url The URL of the API to use for retrieving vectors. Default is "https://api.openai.com/v1/embeddings".
 #' @param api_key The API key for the vector retrieval API. This is required when vectors is NULL.
+#' @param ignore_duplicates a logical value TRUE for ignore FALSE for don't ignore.
 #' @return The updated vector database.
 #' @importFrom digest digest
 #' @importFrom data.table data.table rbindlist setnames as.data.table :=
@@ -36,7 +37,7 @@
 #'                       vectors = db$vectors,
 #'                       metadatas = db$metadatas)
 #' }
-add_collection <- function(db = create_collection(), vectors = NULL, metadatas, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY")) {
+add_collection <- function(db = create_collection(), vectors = NULL, metadatas, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY"), ignore_duplicates = TRUE) {
   if(!inherits(db, "vectorDB")) stop("db is not a vector database.")
 
   # Check if metadatas is NULL or empty
@@ -52,15 +53,8 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadatas, 
     stop("Metadatas must be either a data.table or a list")
   }
 
-  if (is.null(vectors)) {
-    # Check if API Key is NULL or empty
-    if(is.null(api_key) || api_key == "") stop("API Key cannot be NULL or empty when vectors is NULL.")
-    if(any(metadata_dt$text %in% db$metadata$text)) message("Some of the text you are requesting embeddings for already exists in the metadata of the database you are adding to.")
-    # Retrieve new vectors using the API and the text field in the metadata
-    vectors <- retrieve_vectors(metadata_dt$text, model = model, url = url, api_key = api_key)
-  }
-
-  if(is.data.table(vectors)){
+  if(!is.null(vectors)){
+    if(is.data.table(vectors)){
     vectors_dt <- vectors
   }
   else if(is.list(vectors)){
@@ -69,6 +63,28 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadatas, 
   }
   else{
     stop("Vectors must be either a data.table or a list")
+  }
+  }
+
+  if(any(metadata_dt$text %in% db$metadata$text)){
+    if(ignore_duplicates){
+      logical_dups <- !metadata_dt$text %in% db$metadata$text
+      metadata_dt <- metadata_dt[logical_dups,]
+      message("Some of the text you are requesting embeddings for already exists in the metadata of the database you are adding to. Ignoring duplicates.")
+      if(!is.null(vectors_dt)){
+        vectors_dt <- vectors_dt[, .SD, .SDcols = logical_dups]
+      }
+    }
+    else{
+      message("Some of the text you are requesting embeddings for already exists in the metadata of the database you are adding to. Duplicating entries.")
+    }
+  }
+
+  if (is.null(vectors)) {
+    # Check if API Key is NULL or empty
+    if(is.null(api_key) || api_key == "") stop("API Key cannot be NULL or empty when vectors is NULL.")
+    # Retrieve new vectors using the API and the text field in the metadata
+    vectors <- retrieve_vectors(metadata_dt$text, model = model, url = url, api_key = api_key)
   }
 
   if((nrow(vectors_dt) != nrow(db$vectors)) & (nrow(db$vectors) != 0)) stop("All vectors should have the same length as the vectorDB you are adding to or you must be adding to an empty vectorDB.")
