@@ -8,7 +8,7 @@
 #'
 #' @param db The vector database.
 #' @param vectors A list of vectors to add. If NULL, vectors are retrieved using the text field in the metadata.
-#' @param metadatas A list of metadata corresponding to each vector. This cannot be NULL or empty.
+#' @param metadata A list of metadata corresponding to each vector. This cannot be NULL or empty.
 #' @param model The name of the model to use for retrieving vectors. Default is 'text-embedding-ada-002'.
 #' @param url The URL of the API to use for retrieving vectors. Default is "https://api.openai.com/v1/embeddings".
 #' @param api_key The API key for the vector retrieval API. This is required when vectors is NULL.
@@ -26,7 +26,7 @@
 #'                                    c(3.5, 6.7, 8.1),
 #'                                    c(1.8, 7.2, 6.3),
 #'                                    c(5.6, 7.2, 8.9)),
-#'                  metadatas = list(list(text = "This is a document", file = "source1"),
+#'                  metadata = list(list(text = "This is a document", file = "source1"),
 #'                                   list(text = "This is another document", file = "source2"),
 #'                                   list(text = "This is yet another document", file = "source3"),
 #'                                   list(text = "This is a fourth document", file = "source4"),
@@ -35,22 +35,22 @@
 #' #Example combining two databases.
 #' db2 <- add_collection(create_collection(),
 #'                       vectors = db$vectors,
-#'                       metadatas = db$metadatas)
+#'                       metadata = db$metadata)
 #' }
-add_collection <- function(db = create_collection(), vectors = NULL, metadatas, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY"), ignore_duplicates = TRUE) {
+add_collection <- function(db = create_collection(), vectors = NULL, metadata, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY"), ignore_duplicates = TRUE) {
   if(!inherits(db, "vectorDB")) stop("db is not a vector database.")
 
-  # Check if metadatas is NULL or empty
-  if(is.null(metadatas) || length(metadatas) == 0) stop("metadatas cannot be NULL or empty.")
+  # Check if metadata is NULL or empty
+  if(is.null(metadata) || length(metadata) == 0) stop("metadata cannot be NULL or empty.")
 
-  if(is.data.table(metadatas)){
-    metadata_dt <- metadatas
+  if(is.data.table(metadata)){
+    metadata_dt <- metadata
   }
-  else if(is.list(metadatas)){
-    metadata_dt <- data.table::rbindlist(metadatas, use.names = FALSE)
+  else if(is.list(metadata)){
+    metadata_dt <- data.table::rbindlist(metadata, use.names = FALSE)
   }
   else{
-    stop("Metadatas must be either a data.table or a list")
+    stop("metadata must be either a data.table or a list")
   }
 
   if(!is.null(vectors)){
@@ -84,7 +84,7 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadatas, 
     # Check if API Key is NULL or empty
     if(is.null(api_key) || api_key == "") stop("API Key cannot be NULL or empty when vectors is NULL.")
     # Retrieve new vectors using the API and the text field in the metadata
-    vectors <- retrieve_vectors(metadata_dt$text, model = model, url = url, api_key = api_key)
+    vectors_dt <- retrieve_vectors(metadata_dt$text, model = model, url = url, api_key = api_key)
   }
 
   if((nrow(vectors_dt) != nrow(db$vectors)) & (nrow(db$vectors) != 0)) stop("All vectors should have the same length as the vectorDB you are adding to or you must be adding to an empty vectorDB.")

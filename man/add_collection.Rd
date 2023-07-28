@@ -7,7 +7,7 @@
 add_collection(
   db = create_collection(),
   vectors = NULL,
-  metadatas,
+  metadata,
   model = "text-embedding-ada-002",
   url = "https://api.openai.com/v1/embeddings",
   api_key = Sys.getenv("OPENAI_API_KEY"),
@@ -19,7 +19,7 @@ add_collection(
 
 \item{vectors}{A list of vectors to add. If NULL, vectors are retrieved using the text field in the metadata.}
 
-\item{metadatas}{A list of metadata corresponding to each vector. This cannot be NULL or empty.}
+\item{metadata}{A list of metadata corresponding to each vector. This cannot be NULL or empty.}
 
 \item{model}{The name of the model to use for retrieving vectors. Default is 'text-embedding-ada-002'.}
 
@@ -47,7 +47,7 @@ db <- add_collection(create_collection(),
                                    c(3.5, 6.7, 8.1),
                                    c(1.8, 7.2, 6.3),
                                    c(5.6, 7.2, 8.9)),
-                 metadatas = list(list(text = "This is a document", file = "source1"),
+                 metadata = list(list(text = "This is a document", file = "source1"),
                                   list(text = "This is another document", file = "source2"),
                                   list(text = "This is yet another document", file = "source3"),
                                   list(text = "This is a fourth document", file = "source4"),
@@ -56,6 +56,6 @@ db <- add_collection(create_collection(),
 #Example combining two databases.
 db2 <- add_collection(create_collection(),
                       vectors = db$vectors,
-                      metadatas = db$metadatas)
+                      metadata = db$metadata)
 }
 }
