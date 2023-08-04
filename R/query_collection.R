@@ -47,8 +47,8 @@ query_collection <- function(db, filter = NULL, query_embeddings = NULL, top_n =
   # Compute similarity
   if (!is.null(query_embeddings)) {
     if(is.character(query_embeddings)){
-      query_embeddings <- matrix(retrieve_vectors(query_embeddings), ncol = 1)
-      col_names(query_embeddings) <- "identified"
+      query_embeddings <- as.matrix(retrieve_vectors(query_embeddings))
+      colnames(query_embeddings) <- "identified"
     }
     else if(is.numeric(query_embeddings)){
       query_embeddings <- matrix(query_embeddings, ncol = 1)
