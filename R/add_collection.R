@@ -46,11 +46,14 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadata, m
   if(is.data.table(metadata)){
     metadata_dt <- metadata
   }
+  else if(is.data.frame(metadata)){
+    metadata_dt <- data.table::as.data.table(metadata)
+  }
   else if(is.list(metadata)){
     metadata_dt <- data.table::rbindlist(metadata, use.names = FALSE)
   }
   else{
-    stop("metadata must be either a data.table or a list")
+    stop("metadata must be either a data.table, data.frame, or a list")
   }
 
   if(!is.null(vectors)){
