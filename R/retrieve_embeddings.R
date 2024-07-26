@@ -22,12 +22,34 @@ retrieve_vectors <- function(inputs, model = 'text-embedding-ada-002', url = "ht
 
     parameter_list = list(input = inputs, model = model)
 
+    body <- toJSON(parameter_list)
+
     request_base <- tryCatch({
-      httr::POST(url = url,
-                 body = parameter_list,
-                 httr::add_headers(Authorization = paste("Bearer", api_key)),
-                 encode = "json")
-    }, error = function(e) {
+      # send http post request to url
+    #   httr::POST(url = url,
+    #              body = parameter_list,
+    #              # adds an authorized header which is bearer(token validation) and api_key
+    #              httr::add_headers(Authorization = paste("Bearer", api_key)),
+    #              encode = "json")
+    # },
+
+     con <- url(description = url, headers = c("Authorization" = paste("Bearer",
+                                                                 api_key),
+                                         "Content-Type" = "application/json"
+                                         ))
+     # write the body to the connection
+     write(body, con)
+
+     # read the response
+     response <- readLines(con)
+
+     # Close the connection
+     # close(con)
+
+     #return the response
+     response
+    },
+    error = function(e) {
       stop("Error in HTTP request: ", e$message)
     })
 

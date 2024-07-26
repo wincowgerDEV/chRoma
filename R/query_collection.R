@@ -62,8 +62,15 @@ query_collection <- function(db, filter = NULL, query_embeddings = NULL, top_n =
     }
 
     if(type == "cosine"){
-      similarity <- text2vec::sim2(t(query_embeddings), t(as.matrix(db$vectors)), method = "cosine", norm = "l2")
-    }
+      #similarity <- text2vec::sim2(t(query_embeddings), t(as.matrix(db$vectors)), method = "cosine", norm = "l2")
+
+      query_matrix <- t(query_embeddings)
+
+      db_matrix <- db_vectors
+
+      similarity <- cosine(query_matrix, db_matrix)
+
+      }
 
     if(type == "dotproduct"){
       similarity <- crossprod(query_embeddings, as.matrix(db$vectors))
