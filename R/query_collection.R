@@ -9,8 +9,8 @@
 #' @param top_n Integer, indicating the number of top matches to return
 #' @param type The function to use to compute the similarities between the vectors
 #' @return A matrix of similarity scores or a data.table of top matches
-#' @importFrom text2vec sim2
 #' @importFrom data.table data.table setnames :=
+#' @importFrom utils head
 #' @export
 #'
 #' @examples

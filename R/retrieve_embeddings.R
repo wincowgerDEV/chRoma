@@ -7,10 +7,9 @@
 #' @param url The OpenAI api url to use
 #' @param api_key The OpenAI api key to use
 #' @return A list of numeric vectors
-#' @importFrom httr POST content add_headers
 #' @importFrom data.table as.data.table
+#' @importFrom utils head
 #' @export
-#'
 #' @examples
 #' \dontrun{
 #' embeddings <- retrieve_vectors(c("This is a document", "This is another document"))

@@ -4,6 +4,7 @@
 #'
 #' @return A new vector database
 #' @importFrom data.table data.table
+#' @importFrom utils head
 #' @export
 #'
 #' @examples

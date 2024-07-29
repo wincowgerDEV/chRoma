@@ -16,6 +16,7 @@
 #' @return The updated vector database.
 #' @importFrom digest digest
 #' @importFrom data.table data.table rbindlist setnames as.data.table :=
+#' @importFrom utils head
 #' @export
 #'
 #' @examples

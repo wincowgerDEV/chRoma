@@ -5,6 +5,7 @@
 #' @param x The object to check
 #' @return TRUE if the object is a vectorDB, FALSE otherwise
 #' @importFrom data.table is.data.table
+#' @importFrom utils head
 #' @export
 #'
 #' @examples
