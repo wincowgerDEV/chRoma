@@ -6,6 +6,8 @@
 #' @return TRUE if the object is a vectorDB, FALSE otherwise
 #' @importFrom data.table is.data.table
 #' @importFrom utils head
+#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite fromJSON
 #' @export
 #'
 #' @examples

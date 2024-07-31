@@ -11,6 +11,8 @@
 #' @return A matrix of similarity scores or a data.table of top matches
 #' @importFrom data.table data.table setnames :=
 #' @importFrom utils head
+#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite fromJSON
 #' @export
 #'
 #' @examples

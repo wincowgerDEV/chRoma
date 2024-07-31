@@ -5,6 +5,8 @@
 #' @return A new vector database
 #' @importFrom data.table data.table
 #' @importFrom utils head
+#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite fromJSON
 #' @export
 #'
 #' @examples

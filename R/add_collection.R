@@ -17,6 +17,8 @@
 #' @importFrom digest digest
 #' @importFrom data.table data.table rbindlist setnames as.data.table :=
 #' @importFrom utils head
+#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite fromJSON
 #' @export
 #'
 #' @examples
@@ -38,6 +40,7 @@
 #'                       vectors = db$vectors,
 #'                       metadata = db$metadata)
 #' }
+
 add_collection <- function(db = create_collection(), vectors = NULL, metadata, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY"), ignore_duplicates = TRUE) {
   if(!inherits(db, "vectorDB")) stop("db is not a vector database.")
 
