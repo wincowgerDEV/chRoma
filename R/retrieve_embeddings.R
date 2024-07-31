@@ -37,16 +37,6 @@
 #   con <- socketConnection(host, port = 443, blocking = TRUE, open = "r+b", server = FALSE, ssl = TRUE)
 #
 #   # Write the request
-#
-
-
-
-
-
-
-
-#
-#
 #     parameter_list = list(input = inputs, model = model)
 #     # Convert inputs to JSON
 #     body <- toJSON(parameter_list)
@@ -92,7 +82,6 @@
 
 # inputs: vector of character strings for which you want to get embeddings
 
-#
 
 # retrieve_vectors <- function(inputs, model = 'text-embedding-ada-002', url = "https://api.openai.com/v1/embeddings", api_key = Sys.getenv("OPENAI_API_KEY")) {
 #   # Validate input is a character
@@ -218,7 +207,7 @@ retrieve_vectors <- function(inputs, model = 'text-embedding-ada-002', url = "ht
     paste(response_lines[json_start:length(response_lines)], collapse = "")
 
   }, error = function(e) {
-    stop("Error in HTTP request: ", e$message, "\nMake sure your internet connection is working and the API key is correct.")
+    stop("Error in HTTP request: ", e$message)
   })
 
   # Parse the JSON response
