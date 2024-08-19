@@ -1,5 +1,14 @@
-function myfunc(input, model){
-fetch('https://api.openai.com/v1/embeddings', {
+async function myfunc(input, model){
+    if (typeof input != 'string'){
+        throw new Error("Inputs must be a character vector of terms to get embeddings for.");
+    }
+
+    if (!api_key || api_key ==""){
+        throw new Error("API key is missing. Please set the OPENAI_API_KEY environment variable.");
+    }
+
+    try{
+    const res = await fetch('https://api.openai.com/v1/embeddings', {
     method: 'POST', 
     headers: {
         'Accept': 'application.json',
@@ -14,8 +23,20 @@ fetch('https://api.openai.com/v1/embeddings', {
     }) 
 })
 
-    .then(response => response.json())
-    .then(response => console.log(JSON.stringify(response)))
+// request check
+console.log(res.status)
+if(res.status !== 200){
+    // log out failed request
+    console.error('Failed request with status:', res.status);
+} else{
+    const develop = await res.json();
+    console.log(develop);
+}
+} catch (error){
+    console.error('Fetch error:', error.message);
+}
 }
 
-myfunc(input = "teacher", model = "text-embedding-ada-002", api_key = "")
+
+
+myfunc(input = "test_data.csv", model = "text-embedding-ada-002", api_key = "")
