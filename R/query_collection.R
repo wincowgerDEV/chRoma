@@ -11,6 +11,7 @@
 #' @return A matrix of similarity scores or a data.table of top matches
 #' @importFrom data.table data.table setnames :=
 #' @importFrom utils head
+#' @importFrom text2vec sim2
 #' @importFrom jsonlite toJSON
 #' @importFrom jsonlite fromJSON
 #' @export
@@ -64,13 +65,19 @@ query_collection <- function(db, filter = NULL, query_embeddings = NULL, top_n =
     }
 
     if(type == "cosine"){
+
+      query_embeddings <- t(query_embeddings)
+      db$vectors <- t(as.matrix(db$vectors))
+
+      x <- (1/sqrt(rowSums(query_embeddings^2)))
+      y <- (1/sqrt(rowSums(db$vectors^2)))
+
+
+      x <- x*query_embeddings
+      y <- y*db$vectors
+      similarity <- tcrossprod(x,y)
+
       #similarity <- text2vec::sim2(t(query_embeddings), t(as.matrix(db$vectors)), method = "cosine", norm = "l2")
-
-      query_matrix <- t(query_embeddings)
-
-      db_matrix <- db_vectors
-
-      similarity <- cosine(query_matrix, db_matrix)
 
       }
 
@@ -96,4 +103,3 @@ query_collection <- function(db, filter = NULL, query_embeddings = NULL, top_n =
 
   return(db)
 }
-
