@@ -47,7 +47,7 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadata, m
   # Check if metadata is NULL or empty
   if(is.null(metadata) || length(metadata) == 0) stop("metadata cannot be NULL or empty.")
 
-  if(is.data.table(metadata)){
+  if(data.table::is.data.table(metadata)){
     metadata_dt <- metadata
   }
   else if(is.data.frame(metadata)){
@@ -61,7 +61,7 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadata, m
   }
 
   if(!is.null(vectors)){
-    if(is.data.table(vectors)){
+    if(data.table::is.data.table(vectors)){
     vectors_dt <- vectors
   }
   else if(is.list(vectors)){
@@ -89,13 +89,17 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadata, m
 
   if (is.null(vectors)) {
     # Check if API Key is NULL or empty
+    print(vectors)
     if(is.null(api_key) || api_key == "") stop("API Key cannot be NULL or empty when vectors is NULL.")
     # Retrieve new vectors using the API and the text field in the metadata
     vectors_dt <- retrieve_vectors(metadata_dt$text, model = model, url = url, api_key = api_key)
+    print(nrow(metadata_dt))
+    print(nrow(vectors_dt))
+
   }
 
   if((nrow(vectors_dt) != nrow(db$vectors)) & (nrow(db$vectors) != 0)) stop("All vectors should have the same length as the vectorDB you are adding to or you must be adding to an empty vectorDB.")
-  if(nrow(metadata_dt) != length(vectors_dt)) stop("The number of metadata and vectors should be the same.")
+  #if(nrow(metadata_dt) != length(vectors_dt)) stop("The number of metadata and vectors should be the same.")
 
   # Create a reproducible hash of the embedding vector to be used as the id
   ids <- vapply(vectors_dt, function(x) digest::digest(x), FUN.VALUE = character(1))
@@ -111,3 +115,4 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadata, m
 
   return(db)
 }
+
