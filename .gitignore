@@ -3,3 +3,8 @@
 .RData
 .Ruserdata
 openai.txt
+test_data.csv
+
+# json files
+/inst/data.json
+/isnt/error.log
