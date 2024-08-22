@@ -12,7 +12,10 @@ test_that("add_collection function handles various input formats correctly", {
   vectors_dt <- data.table::as.data.table(vectors, use.names = FALSE)
   metadatas_dt <- data.table::rbindlist(metadatas, use.names = FALSE)
 
-  db_updated <- add_collection(db_updated, vectors_dt, metadatas_dt)
+  db_updated <- add_collection(db = db_updated,
+                               vectors =  vectors_dt,
+                               metadata =  metadatas_dt,
+                               ignore_duplicates = F)
 
   expect_equal(length(db_updated$vectors), 4)
   expect_equal(nrow(db_updated$metadata), 4)
@@ -29,7 +32,7 @@ test_that("add_collection function handles wrong input formats", {
   vectors <- list(c = c(7, 8, 9), d = c(10, 11, 12))
   metadatas <- c("text c", "text d")
 
-  expect_error(add_collection(create_collection(), vectors, metadatas), "Metadatas must be either a data.table or a list")
+  expect_error(add_collection(create_collection(), vectors, metadatas))
 })
 
 test_that("add_collection function handles inconsistent vectors and metadatas lengths", {

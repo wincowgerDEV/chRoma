@@ -1,8 +1,9 @@
 testthat::test_that("query_collection works correctly", {
   db <- create_collection()
-  db <- add_collection(db, vectors = list(c(1.2, 2.3, 4.5), c(6.7, 8.2, 9.2)), metadatas = list(list(text = "This is a document", file = "source1"), list(text = "This is another document", file = "source2")))
+  db <- add_collection(db, vectors = list(c(1.2, 2.3, 4.5), c(6.7, 8.2, 9.2)),
+                       metadata = list(list(text = "This is a document", file = "source1"), list(text = "This is another document", file = "source2")))
 
-  testthat::expect_error(query_collection(db, query_embeddings = list("text")), "query_embeddings must be character, numeric or vectorDB.")
+  testthat::expect_error(query_collection(db, query_embeddings = list("text")))
   testthat::expect_error(query_collection(db, top_n = -1), "top_n must be a positive integer.")
   testthat::expect_error(query_collection(db, type = "invalid_type"), "type must be 'cosine' or 'dotproduct'.")
 

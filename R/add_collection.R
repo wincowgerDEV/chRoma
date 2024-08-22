@@ -15,7 +15,7 @@
 #' @param ignore_duplicates a logical value TRUE for ignore FALSE for don't ignore.
 #' @return The updated vector database.
 #' @importFrom digest digest
-#' @importFrom data.table data.table rbindlist setnames as.data.table :=
+#' @importFrom data.table is.data.table data.table rbindlist setnames as.data.table :=
 #' @export
 #'
 #' @examples
@@ -72,14 +72,16 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadata, m
   if(any(metadata_dt$text %in% db$metadata$text)){
     if(ignore_duplicates){
       logical_dups <- !metadata_dt$text %in% db$metadata$text
-      metadata_dt <- metadata_dt[logical_dups,]
-      message("Some of the text you are requesting embeddings for already exists in the metadata of the database you are adding to. Ignoring duplicates.")
-      if(!is.null(vectors_dt)){
-        vectors_dt <- vectors_dt[, .SD, .SDcols = logical_dups]
+      if(any(!logical_dups)){
+        metadata_dt <- metadata_dt[logical_dups,]
+        message("Some of the text you are requesting embeddings for already exists in the metadata of the database you are adding to. Ignoring duplicates.")
+        if(!is.null(vectors_dt)){
+          vectors_dt <- vectors_dt[, .SD, .SDcols = logical_dups]
+        }
       }
     }
     else{
-      message("Some of the text you are requesting embeddings for already exists in the metadata of the database you are adding to. Duplicating entries.")
+      message("Duplicating entries.Some of the text you are requesting embeddings for already exists in the metadata of the database you are adding to.")
     }
   }
 
