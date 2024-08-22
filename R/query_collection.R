@@ -9,8 +9,11 @@
 #' @param top_n Integer, indicating the number of top matches to return
 #' @param type The function to use to compute the similarities between the vectors
 #' @return A matrix of similarity scores or a data.table of top matches
-#' @importFrom text2vec sim2
 #' @importFrom data.table data.table setnames :=
+#' @importFrom utils head
+#' @importFrom text2vec sim2
+#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite fromJSON
 #' @export
 #'
 #' @examples
@@ -62,8 +65,21 @@ query_collection <- function(db, filter = NULL, query_embeddings = NULL, top_n =
     }
 
     if(type == "cosine"){
-      similarity <- text2vec::sim2(t(query_embeddings), t(as.matrix(db$vectors)), method = "cosine", norm = "l2")
-    }
+
+      query_embeddings <- t(query_embeddings)
+      db$vectors <- t(as.matrix(db$vectors))
+
+      x <- (1/sqrt(rowSums(query_embeddings^2)))
+      y <- (1/sqrt(rowSums(db$vectors^2)))
+
+
+      x <- x*query_embeddings
+      y <- y*db$vectors
+      similarity <- tcrossprod(x,y)
+
+      #similarity <- text2vec::sim2(t(query_embeddings), t(as.matrix(db$vectors)), method = "cosine", norm = "l2")
+
+      }
 
     if(type == "dotproduct"){
       similarity <- crossprod(query_embeddings, as.matrix(db$vectors))
@@ -87,4 +103,3 @@ query_collection <- function(db, filter = NULL, query_embeddings = NULL, top_n =
 
   return(db)
 }
-
