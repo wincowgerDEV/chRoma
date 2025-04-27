@@ -1,6 +1,6 @@
-Package: chRoma_webR
+Package: chRoma
 Title: A Tool for Managing Vector Databases
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person(given = "Win",
            family = "Cowger",
@@ -12,7 +12,9 @@ Encoding: UTF-8
 Imports: 
     data.table,
     digest,
-    jsonlite
+    jsonlite, 
+    text2vec,
+    httr
 Suggests: 
     testthat (>= 3.0.0)
 Roxygen: list(markdown = TRUE)

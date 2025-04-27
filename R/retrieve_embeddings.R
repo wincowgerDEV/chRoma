@@ -9,6 +9,7 @@
 #' @return A list of numeric vectors
 #' @importFrom jsonlite fromJSON
 #' @importFrom data.table as.data.table
+#' @importFrom httr POST content add_headers
 #' @export
 #'
 #' @examples
@@ -25,26 +26,22 @@ retrieve_vectors <- function(inputs, model = 'text-embedding-ada-002',
 
   if(is.null(api_key) || api_key == "") stop("API key is missing. Please set the OPENAI_API_KEY environment variable.")
 
+  parameter_list = list(input = inputs, model = model)
 
-  # Construct the command to run the Node.js script with arguments
-  cmd <- sprintf("node inst/api_call.js '%s' '%s' '%s' '%s'", inputs, model, url, api_key)
-
-  # Run the command
-  system(cmd)
-
-  # Load the output from the JSON file
-  output <- tryCatch({
-    jsonlite::fromJSON("inst/data.json")
+  request_base <- tryCatch({
+    httr::POST(url = url,
+               body = parameter_list,
+               httr::add_headers(Authorization = paste("Bearer", api_key)),
+               encode = "json")
   }, error = function(e) {
-    message("Failed to read JSON: ", e$message)
-    NULL
+    stop("Error in HTTP request: ", e$message)
   })
 
-  # Output the result
-  data <- output$data
+  if(request_base$status_code != 200) stop("API request failed with status code: ", request_base$status_code)
 
-  # output embedding vectors as data frame
-  vectors <- unlist(data$embedding) |>
+  output_base <- httr::content(request_base)
+
+  vectors <- lapply(output_base$data, function(x){unlist(x$embedding)}) |>
     data.table::as.data.table()
 
   return(vectors)

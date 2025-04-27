@@ -101,7 +101,6 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadata, m
   }
 
   if((nrow(vectors_dt) != nrow(db$vectors)) & (nrow(db$vectors) != 0)) stop("All vectors should have the same length as the vectorDB you are adding to or you must be adding to an empty vectorDB.")
-  #if(nrow(metadata_dt) != length(vectors_dt)) stop("The number of metadata and vectors should be the same.")
 
   # Create a reproducible hash of the embedding vector to be used as the id
   ids <- vapply(vectors_dt, function(x) digest::digest(x), FUN.VALUE = character(1))
@@ -114,6 +113,7 @@ add_collection <- function(db = create_collection(), vectors = NULL, metadata, m
   # Add to database
   db$vectors <- cbind(db$vectors, vectors_dt)
   db$metadata <- rbind(db$metadata, metadata_dt, fill = TRUE)
+  if(nrow(db$metadata) != ncol(db$vectors)) stop("The number of metadata and vectors should be the same.")
 
   return(db)
 }

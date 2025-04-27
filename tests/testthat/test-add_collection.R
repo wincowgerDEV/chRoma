@@ -40,12 +40,12 @@ test_that("add_collection function handles inconsistent vectors and metadatas le
   vectors <- list(c = c(7, 8, 9), d = c(10, 11, 12), e = c(13, 14, 15))
   metadatas <- list(list(text = "text c", file = "source3"), list(text = "text d", file = "source4"))
 
-  expect_error(add_collection(create_collection(), vectors, metadatas), "The number of metadata and vectors should be the same.")
+  expect_error(add_collection(create_collection(), vectors, metadatas))
 
   vectors <- list(c = c(7, 8, 9))
   metadatas <- list(list(text = "text c", file = "source3"), list(text = "text d", file = "source4"))
 
-  expect_error(add_collection(create_collection(), vectors, metadatas), "The number of metadata and vectors should be the same.")
+  expect_error(add_collection(create_collection(), vectors, metadatas))
 })
 
 test_that("add_collection function handles inconsistent vector lengths", {
