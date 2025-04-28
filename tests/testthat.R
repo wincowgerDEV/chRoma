@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(chRoma2)
+library(chRoma)
 
-test_check("chRoma2")
+test_check("chRoma")
